@@ -6,28 +6,65 @@
     <!--  In order for this datatemplate to be picked correctly, the key has to follow the naming convention of <IPlugin.Name>_Options -->
     <!--  Furthermore the Resource Dictionary has to be exported via code behind export attributes  -->
     <DataTemplate x:Key="SkyFlats_Options">
-        <StackPanel Orientation="Vertical">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Re-slew to Null point while taking Sky Flats" />
-                <CheckBox IsChecked="{Binding ReslewToNullPoint}" />
+        <StackPanel Orientation="Vertical" Margin="0,8">
+            <!-- Null Point Settings Group -->
+
+            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+
+                <TextBlock Text="Null Point" FontSize="16" FontWeight="Bold" Margin="0,0,0,6" />
+
+                <TextBlock FontSize="10"
+                    Text="The null point is a specific position in the sky where the polarization of twilight sky background is minimized. This occurs approximately 90 degrees from the Sun, where sky brightness is more uniform. Taking flat fields at this null point position reduces polarization effects that can create systematic errors in flat field calibration, resulting in more accurate and consistent flat fields.\n\nReference: Chromey, F. R., &amp; Hasselbacher, D. A. 1996, PASP, 108, 944"
+            TextWrapping="Wrap" />
+
+                <StackPanel Orientation="Horizontal" Margin="16,4">
+                    <CheckBox IsChecked="{Binding ReslewToNullPoint}" VerticalAlignment="Center" />
+                    <TextBlock Text="Re-slew to Null point while taking Sky Flats"
+                          Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="36,4">
+                    <TextBlock Text="every" VerticalAlignment="Center" />
+                    <TextBox Width="40" Text="{Binding ReslewEverySeconds}"
+                        Margin="8,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="seconds" VerticalAlignment="Center" />
+                </StackPanel>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="every " />
-                <TextBox Width="30" Text="{Binding ReslewEverySeconds}" />
-                <TextBlock Text=" seconds" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Use Dithering while taking Sky Flats" />
-                <CheckBox IsChecked="{Binding UseDithering}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Dither amount (pixels)" />
-                <TextBox Width="30" Text="{Binding DitherArcsec}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Settle time after dithering" />
-                <TextBox Width="30" Text="{Binding DitherSettleTime}" />
-                <TextBlock Text=" (seconds)" />
+
+            <!-- Dithering Settings Group -->
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Dithering" FontWeight="Bold" FontSize="16" Margin="0,0,0,6" />
+                <TextBlock FontSize="10"
+                    Text="Dithering involves making small, random offsets to the telescope pointing between exposures. During sky flats acquisition (which occurs during twilight), dithering is essential to prevent stars from accumulating in fixed positions across multiple frames. This technique ensures that any stellar remnants or fixed-pattern noise are averaged out during the stacking process, resulting in cleaner, more accurate flat fields. Dithering is particularly important when taking flats closer to darkness when more stars become visible."
+                           TextWrapping="Wrap" />
+
+                <StackPanel Orientation="Horizontal" Margin="16,4">
+                    <CheckBox IsChecked="{Binding UseDithering}" VerticalAlignment="Center" />
+                    <TextBlock Text="Use Dithering while taking Sky Flats"
+                          Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Grid Margin="36,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Dither amount:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
+                    <TextBox Width="40" Text="{Binding DitherArcsec}" Margin="8,0,8,0"
+                        VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
+                    <TextBlock Text="pixels" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" />
+
+                    <TextBlock Text="Settle time:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" />
+                    <TextBox Width="40" Text="{Binding DitherSettleTime}" Margin="8,0,8,0"
+                        VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
+                    <TextBlock Text="seconds" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" Margin="0,8,0,0" />
+                </Grid>
             </StackPanel>
         </StackPanel>
     </DataTemplate>
