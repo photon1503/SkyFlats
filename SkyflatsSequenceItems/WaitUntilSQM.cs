@@ -35,13 +35,13 @@ namespace Photon.NINA.Skyflats {
     ///
     /// If the item has some preconditions that should be validated, it shall also extend the IValidatable interface and add the validation logic accordingly.
     /// </summary>
-    [ExportMetadata("Name", "Take Sky Flats")]
+    [ExportMetadata("Name", "Wait until SQM")]
     [ExportMetadata("Description", "This item will just show a notification and is just there to show how the plugin system works")]
     [ExportMetadata("Icon", "Plugin_Test_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]
-    public class TakeSkyFlats : SequenceItem {
+    public class WaitUntilSQM : SequenceItem {
         /// <summary>
         /// The constructor marked with [ImportingConstructor] will be used to import and construct the object
         /// General device interfaces can be added to the constructor parameters and will be automatically injected on instantiation by the plugin loader
@@ -80,47 +80,38 @@ namespace Photon.NINA.Skyflats {
         private IProfileService profileService;
 
         [ImportingConstructor]
-        public TakeSkyFlats(IWeatherDataMediator weatherDataMediator, ITelescopeMediator telescopeMediator, IProfileService profileService) {
+        public WaitUntilSQM(IWeatherDataMediator weatherDataMediator, ITelescopeMediator telescopeMediator, IProfileService profileService) {
             this.telescopeMediator = telescopeMediator;
             this.profileService = profileService;
             this.weatherDataMediator = weatherDataMediator;
+            SQMoperators = new ObservableCollection<string> { "brighter than", "darker than" };
+            SQMOperator = "darker than";
         }
 
-        public TakeSkyFlats(TakeSkyFlats copyMe) : this(copyMe.weatherDataMediator, copyMe.telescopeMediator, copyMe.profileService) {
+        public WaitUntilSQM(WaitUntilSQM copyMe) : this(copyMe.weatherDataMediator, copyMe.telescopeMediator, copyMe.profileService) {
             CopyMetaData(copyMe);
         }
 
-        public ObservableCollection<string> Filters { get; set; }
+        public ObservableCollection<string> SQMoperators { get; set; }
 
-        private string filter;
+        private string _SQMoperator;
 
         [JsonProperty]
-        public string Filter {
-            get => filter;
+        public string SQMOperator {
+            get => _SQMoperator;
             set {
-                filter = value;
+                _SQMoperator = value;
                 RaisePropertyChanged();
             }
         }
 
-        private double sqmThresholdMin;
+        private double sqmThreshold;
 
         [JsonProperty]
-        public double SQMThresholdMin {
-            get => sqmThresholdMin;
+        public double SQMThreshold {
+            get => sqmThreshold;
             set {
-                sqmThresholdMin = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private double sqmThresholdMax;
-
-        [JsonProperty]
-        public double SQMThresholdMax {
-            get => sqmThresholdMax;
-            set {
-                sqmThresholdMax = value;
+                sqmThreshold = value;
                 RaisePropertyChanged();
             }
         }
@@ -138,15 +129,18 @@ namespace Photon.NINA.Skyflats {
                 throw new SequenceEntityFailedException(Loc.Instance["LblTelescopeParkedWarning"]);
             }
 
-            // check SQM limits
-            double currentSQM = weatherDataMediator.GetInfo().SkyQuality;
-            if (currentSQM < SQMThresholdMin || currentSQM > SQMThresholdMax) {
-                return;
+            while (true) {
+                if (token.IsCancellationRequested)
+                    return;
+                if (SQMOperator == "darker than") {
+                    if (weatherDataMediator.GetInfo().SkyQuality > SQMThreshold)
+                        return;
+                } else {
+                    if (weatherDataMediator.GetInfo().SkyQuality < SQMThreshold)
+                        return;
+                }
+                await Task.Delay(1000, token);
             }
-
-            Notification.ShowSuccess($"TakeSkyFlats  {Filter} executed. Current SQM: {currentSQM}");
-
-            // TODO: execute
         }
 
         /// <summary>
@@ -154,7 +148,7 @@ namespace Photon.NINA.Skyflats {
         /// </summary>
         /// <returns></returns>
         public override object Clone() {
-            return new TakeSkyFlats(this);
+            return new WaitUntilSQM(this);
         }
 
         /// <summary>
@@ -162,7 +156,7 @@ namespace Photon.NINA.Skyflats {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return $"Category: {Category}, Item: {nameof(TakeSkyFlats)}";
+            return $"Category: {Category}, Item: {nameof(WaitUntilSQM)}";
         }
     }
 }

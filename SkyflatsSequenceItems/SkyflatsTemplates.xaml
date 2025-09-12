@@ -145,6 +145,32 @@
         </nina:SequenceBlockView>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:WaitUntilSQM}">
+        <nina:SequenceBlockView>
+            <nina:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox
+                     MinWidth="100"
+                     SelectedItem="{Binding SQMOperator}"
+                     ItemsSource="{Binding SQMoperators}" />
+                    <TextBox
+                     MinWidth="40"
+                     Margin="5,0,0,0"
+                     Text="{Binding SQMThreshold}"
+                     TextAlignment="Right" />
+                    <ninactrl:UnitTextBox
+                     MinWidth="60"
+                     Margin="10,0,0,0"
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+
+                     Unit="mag/arcsec²">
+                    </ninactrl:UnitTextBox>
+                </StackPanel>
+            </nina:SequenceBlockView.SequenceItemContent>
+        </nina:SequenceBlockView>
+    </DataTemplate>
+
     <!--  The definition of the test condition plugin style in the mini format on the imaging tab  -->
     <!--  The Key has to be defined as the fully qualified instruction name and the "_Mini" postfix  -->
     <DataTemplate x:Key="Photon.NINA.Skyflats.SkyflatsTestCategory.SkyflatsCondition_Mini">
