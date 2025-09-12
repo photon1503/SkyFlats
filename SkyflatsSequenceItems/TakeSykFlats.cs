@@ -98,6 +98,7 @@ namespace Photon.NINA.Skyflats {
             ShouldDither = true;
             SQMEnd = 15.5;
             SQMStart = 13;
+            ReCenterNullPoint = true;
         }
 
         private TakeSkyFlats(
@@ -158,6 +159,17 @@ namespace Photon.NINA.Skyflats {
             get => sqmEnd;
             set {
                 sqmEnd = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private bool reCenterNullPoint;
+
+        [JsonProperty]
+        public bool ReCenterNullPoint {
+            get => reCenterNullPoint;
+            set {
+                reCenterNullPoint = value;
                 RaisePropertyChanged();
             }
         }
@@ -253,7 +265,7 @@ namespace Photon.NINA.Skyflats {
                 while (!cts.Token.IsCancellationRequested) {
                     if (weatherDataMediator.GetInfo().SkyQuality >= SQMEnd ||
                         weatherDataMediator.GetInfo().SkyQuality < SQMStart) {
-                        Notification.ShowInformation("Sky flats sequence was cancelled due to SQM out of bounds (1).");
+                        //  Notification.ShowInformation("Sky flats sequence was cancelled due to SQM out of bounds (1).");
                         cts.Cancel();
                         break;
                     }

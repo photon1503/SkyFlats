@@ -298,6 +298,16 @@
                         <TextBlock
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
+                            Text="Null Point" />
+                        <CheckBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding ReCenterNullPoint, Mode=TwoWay}" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
                             Text="Min. exp." />
                         <ninactrl:UnitTextBox
                             MinWidth="40"

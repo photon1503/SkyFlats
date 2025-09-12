@@ -80,6 +80,61 @@ namespace Photon.NINA.Skyflats {
             }
         }
 
+        public bool ReslewToNullPoint {
+            get {
+                return Settings.Default.ReslewToNullPoint;
+            }
+            set {
+                Settings.Default.ReslewToNullPoint = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+
+        public double ReslewEverySeconds {
+            get {
+                return Settings.Default.ReslewEverySeconds;
+            }
+            set {
+                Settings.Default.ReslewEverySeconds = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool UseDithering {
+            get {
+                return Settings.Default.UseDithering;
+            }
+            set {
+                Settings.Default.UseDithering = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+
+        public double DitherArcsec {
+            get {
+                return Settings.Default.DitherArcsec;
+            }
+            set {
+                Settings.Default.DitherArcsec = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+
+        public double DitherSettleTime {
+            get {
+                return Settings.Default.DitherSettleTime;
+            }
+            set {
+                Settings.Default.DitherSettleTime = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null) {

@@ -8,12 +8,26 @@
     <DataTemplate x:Key="SkyFlats_Options">
         <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Default Notification Message" />
-                <TextBox MinWidth="50" Text="{Binding DefaultNotificationMessage}" />
+                <TextBlock Text="Re-slew to Null point while taking Sky Flats" />
+                <CheckBox IsChecked="{Binding ReslewToNullPoint}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Profile Specific Notification Message" />
-                <TextBox MinWidth="50" Text="{Binding ProfileSpecificNotificationMessage}" />
+                <TextBlock Text="every " />
+                <TextBox Width="30" Text="{Binding ReslewEverySeconds}" />
+                <TextBlock Text=" seconds" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Use Dithering while taking Sky Flats" />
+                <CheckBox IsChecked="{Binding UseDithering}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Dither amount (pixels)" />
+                <TextBox Width="30" Text="{Binding DitherArcsec}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Settle time after dithering" />
+                <TextBox Width="30" Text="{Binding DitherSettleTime}" />
+                <TextBlock Text=" (seconds)" />
             </StackPanel>
         </StackPanel>
     </DataTemplate>
