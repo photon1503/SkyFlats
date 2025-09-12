@@ -7,13 +7,14 @@ using NINA.Sequencer.SequenceItem;
 using NINA.Sequencer.Trigger;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
+namespace Photon.NINA.Skyflats {
 
     /// <summary>
     /// This Class shows the basic principle on how to add a new Sequence Trigger to the N.I.N.A. sequencer via the plugin interface
@@ -66,14 +67,29 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         ///
 
         private IWeatherDataMediator weatherDataMediator;
+        private IFilterWheelMediator filterWheelMediator;
+
+        public ObservableCollection<string> Filters { get; set; }
+
+        private string filter;
+
+        [JsonProperty]
+        public string Filter {
+            get => filter;
+            set {
+                filter = value;
+                RaisePropertyChanged();
+            }
+        }
 
         [ImportingConstructor]
-        public SkyflatsTrigger(IWeatherDataMediator weatherDataMediator) {
+        public SkyflatsTrigger(IWeatherDataMediator weatherDataMediator, IFilterWheelMediator filterWheelMediator) {
             this.weatherDataMediator = weatherDataMediator;
+            this.filterWheelMediator = filterWheelMediator;
         }
 
         public override object Clone() {
-            return new SkyflatsTrigger(weatherDataMediator) {
+            return new SkyflatsTrigger(weatherDataMediator, filterWheelMediator) {
                 Icon = Icon,
                 Name = Name,
                 Category = Category,
@@ -114,7 +130,7 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return $"Category: {Category}, Item: {nameof(SkyflatsTrigger)}";
+            return $"Category: {Category}, Item: {nameof(SkyflatsTrigger)}, Filter: {Filter}";
         }
     }
 }

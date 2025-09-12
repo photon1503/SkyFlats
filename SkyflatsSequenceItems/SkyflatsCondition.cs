@@ -4,12 +4,13 @@ using NINA.Sequencer.Conditions;
 using NINA.Sequencer.SequenceItem;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
+namespace Photon.NINA.Skyflats {
 
     /// <summary>
     /// This Class shows the basic principle on how to add a new Sequence Trigger to the N.I.N.A. sequencer via the plugin interface
@@ -22,8 +23,8 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
     ///
     /// If the item has some preconditions that should be validated, it shall also extend the IValidatable interface and add the validation logic accordingly.
     /// </summary>
-    [ExportMetadata("Name", "SQM darker than ...")]
-    [ExportMetadata("Description", "Loop while the SQM is darker than the defined value")]
+    [ExportMetadata("Name", "SQM loop while")]
+    [ExportMetadata("Description", "Loop while the SQM is brighter/darker than the defined value")]
     [ExportMetadata("Icon", "Plugin_Test_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceCondition))]
@@ -65,17 +66,32 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
 
         [ImportingConstructor]
         public SkyflatsCondition(IWeatherDataMediator weatherDataMediator) {
-            IsTruthy = true;
             this.weatherDataMediator = weatherDataMediator;
+            sqmThreshold = 8.0;
+            SQMoperators = new ObservableCollection<string> { "brighter than", "darker than" };
+            SQMOperator = "darker than";
         }
 
-        private bool isTruthy;
+        public ObservableCollection<string> SQMoperators { get; set; }
+
+        private string _SQMoperator;
 
         [JsonProperty]
-        public bool IsTruthy {
-            get => isTruthy;
+        public string SQMOperator {
+            get => _SQMoperator;
             set {
-                isTruthy = value;
+                _SQMoperator = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double sqmThreshold;
+
+        [JsonProperty]
+        public double SQMThreshold {
+            get => sqmThreshold;
+            set {
+                sqmThreshold = value;
                 RaisePropertyChanged();
             }
         }
@@ -87,7 +103,10 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         /// <param name="nextItem"></param>
         /// <returns></returns>
         public override bool Check(ISequenceItem previousItem, ISequenceItem nextItem) {
-            return weatherDataMediator.GetInfo().SkyQuality > 18.0;
+            if (SQMOperator == "darker than")
+                return weatherDataMediator.GetInfo().SkyQuality > SQMThreshold;
+            else
+                return weatherDataMediator.GetInfo().SkyQuality < SQMThreshold;
         }
 
         public override object Clone() {
@@ -104,7 +123,7 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return $"Category: {Category}, Item: {nameof(SkyflatsCondition)}, IsTruthy: {IsTruthy}";
+            return $"Category: {Category}, Item: {nameof(SkyflatsCondition)}, SQMThreshold: {SQMThreshold}";
         }
     }
 }

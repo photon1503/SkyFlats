@@ -20,8 +20,9 @@ using NINA.Astrometry.Body;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Google.Protobuf.Reflection.ExtensionRangeOptions.Types;
 using static NINA.Equipment.Equipment.MyGPS.PegasusAstro.UnityApi.DriverUranusReport;
+using System.Collections.ObjectModel;
 
-namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
+namespace Photon.NINA.Skyflats {
 
     /// <summary>
     /// This Class shows the basic principle on how to add a new Sequence Instruction to the N.I.N.A. sequencer via the plugin interface
@@ -34,14 +35,13 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
     ///
     /// If the item has some preconditions that should be validated, it shall also extend the IValidatable interface and add the validation logic accordingly.
     /// </summary>
-    [ExportMetadata("Name", "Slew to null point")]
+    [ExportMetadata("Name", "Take Skyflats")]
     [ExportMetadata("Description", "This item will just show a notification and is just there to show how the plugin system works")]
     [ExportMetadata("Icon", "Plugin_Test_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]
-    public class SkyflatsInstruction : SequenceItem {
-
+    public class TakeSkyFlats : SequenceItem {
         /// <summary>
         /// The constructor marked with [ImportingConstructor] will be used to import and construct the object
         /// General device interfaces can be added to the constructor parameters and will be automatically injected on instantiation by the plugin loader
@@ -73,28 +73,57 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         ///     - IList<IDateTimeProvider>
         /// </remarks>
         ///
+
+        private IWeatherDataMediator weatherDataMediator;
         private ITelescopeMediator telescopeMediator;
 
         private IProfileService profileService;
 
         [ImportingConstructor]
-        public SkyflatsInstruction(ITelescopeMediator telescopeMediator, IProfileService profileService) {
+        public TakeSkyFlats(IWeatherDataMediator weatherDataMediator, ITelescopeMediator telescopeMediator, IProfileService profileService) {
             this.telescopeMediator = telescopeMediator;
             this.profileService = profileService;
+            this.weatherDataMediator = weatherDataMediator;
         }
 
-        public SkyflatsInstruction(SkyflatsInstruction copyMe) : this(copyMe.telescopeMediator, copyMe.profileService) {
+        public TakeSkyFlats(TakeSkyFlats copyMe) : this(copyMe.weatherDataMediator, copyMe.telescopeMediator, copyMe.profileService) {
             CopyMetaData(copyMe);
         }
 
-        /// <summary>
-        /// An example property that can be set from the user interface via the Datatemplate specified in PluginTestItem.Template.xaml
-        /// </summary>
-        /// <remarks>
-        /// If the property changes from the code itself, remember to call RaisePropertyChanged() on it for the User Interface to notice the change
-        /// </remarks>
+        public ObservableCollection<string> Filters { get; set; }
+
+        private string filter;
+
         [JsonProperty]
-        public string Text { get; set; }
+        public string Filter {
+            get => filter;
+            set {
+                filter = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double sqmThresholdMin;
+
+        [JsonProperty]
+        public double SQMThresholdMin {
+            get => sqmThresholdMin;
+            set {
+                sqmThresholdMin = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double sqmThresholdMax;
+
+        [JsonProperty]
+        public double SQMThresholdMax {
+            get => sqmThresholdMax;
+            set {
+                sqmThresholdMax = value;
+                RaisePropertyChanged();
+            }
+        }
 
         /// <summary>
         /// The core logic when the sequence item is running resides here
@@ -109,38 +138,15 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
                 throw new SequenceEntityFailedException(Loc.Instance["LblTelescopeParkedWarning"]);
             }
 
-            InputTopocentricCoordinates nullPoint = null;
+            // check SQM limits
+            double currentSQM = weatherDataMediator.GetInfo().SkyQuality;
+            if (currentSQM < SQMThresholdMin || currentSQM > SQMThresholdMax) {
+                return;
+            }
 
-            nullPoint = new InputTopocentricCoordinates(Angle.ByDegree(profileService.ActiveProfile.AstrometrySettings.Latitude),
-                        Angle.ByDegree(profileService.ActiveProfile.AstrometrySettings.Longitude),
-                        profileService.ActiveProfile.AstrometrySettings.Elevation);
+            Notification.ShowSuccess($"TakeSkyFlats  {Filter} executed. Current SQM: {currentSQM}");
 
-            // get sun azimuth
-
-            double jd = AstroUtil.GetJulianDate(DateTime.Now);
-
-            ObserverInfo observer = new ObserverInfo();
-            observer.Latitude = profileService.ActiveProfile.AstrometrySettings.Latitude;
-            observer.Longitude = profileService.ActiveProfile.AstrometrySettings.Longitude;
-            observer.Elevation = profileService.ActiveProfile.AstrometrySettings.Elevation;
-
-            NOVAS.SkyPosition sun = AstroUtil.GetSunPosition(DateTime.UtcNow, jd, observer);
-            var siderealTime = AstroUtil.GetLocalSiderealTime(DateTime.Now, observer.Longitude);
-            var hourAngle = AstroUtil.HoursToDegrees(AstroUtil.GetHourAngle(siderealTime, sun.RA));
-
-            double alt = AstroUtil.GetAltitude(hourAngle, observer.Latitude, sun.Dec);
-            double az = AstroUtil.GetAzimuth(hourAngle, alt, observer.Latitude, sun.Dec);
-
-            nullPoint.AzDegrees = (int)NormalizeAngle(az + 180); // point to the opposite direction of the sun
-            nullPoint.AltDegrees = 75; // offset 15 degrees from zenith
-
-            await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Coordinates, token);
-        }
-
-        private double NormalizeAngle(double angle) {
-            angle = angle % 360;
-            if (angle < 0) angle += 360;
-            return angle;
+            // TODO: execute
         }
 
         /// <summary>
@@ -148,7 +154,7 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         /// </summary>
         /// <returns></returns>
         public override object Clone() {
-            return new SkyflatsInstruction(this);
+            return new TakeSkyFlats(this);
         }
 
         /// <summary>
@@ -156,7 +162,7 @@ namespace Photon.NINA.Skyflats.SkyflatsTestCategory {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return $"Category: {Category}, Item: {nameof(SkyflatsInstruction)}, Text: {Text}";
+            return $"Category: {Category}, Item: {nameof(TakeSkyFlats)}";
         }
     }
 }
