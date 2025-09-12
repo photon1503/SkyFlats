@@ -137,6 +137,11 @@ namespace Photon.NINA.Skyflats {
             await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Coordinates, token);
         }
 
+        /// <summary>
+        /// Normalize angle to range 0-360
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         private double NormalizeAngle(double angle) {
             angle = angle % 360;
             if (angle < 0) angle += 360;

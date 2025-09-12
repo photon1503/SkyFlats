@@ -5,6 +5,7 @@
     xmlns:local="clr-namespace:Photon.NINA.Skyflats"
     xmlns:mini="clr-namespace:NINA.View.Sequencer.MiniSequencer;assembly=NINA.Sequencer"
     xmlns:nina="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer"
+        xmlns:util="clr-namespace:NINA.Core.Utility;assembly=NINA.Core"
         xmlns:filter="clr-namespace:NINA.Core.Model;assembly=NINA.Core"
 
     xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary">
@@ -15,6 +16,222 @@
         <PathGeometry Figures="M 395.425,141.5C 395.425,153.917 390.28,164.104 380.03,172.063C 369.759,180.021 355.738,184 337.967,184C 327.905,184 318.675,182.792 310.28,180.417C 301.863,178.021 294.821,175.396 289.155,172.542L 289.155,146.854L 290.363,146.854C 297.571,152.313 305.613,156.625 314.467,159.833C 323.3,163.042 331.8,164.646 339.925,164.646C 349.967,164.646 357.842,163.021 363.53,159.771C 369.196,156.521 372.05,151.417 372.05,144.438C 372.05,139.083 370.509,135.021 367.425,132.25C 364.342,129.5 358.405,127.146 349.655,125.188C 346.405,124.479 342.155,123.625 336.925,122.646C 331.696,121.667 326.925,120.604 322.634,119.479C 310.696,116.313 302.238,111.667 297.238,105.542C 292.238,99.4167 289.759,91.875 289.759,82.9375C 289.759,77.3542 290.905,72.0833 293.217,67.125C 295.53,62.1667 299.05,57.75 303.759,53.8542C 308.3,50.0417 314.071,47.0208 321.092,44.7917C 328.113,42.5625 335.967,41.4375 344.675,41.4375C 352.78,41.4375 360.988,42.4375 369.321,44.4167C 377.634,46.4167 384.55,48.8333 390.071,51.6667L 390.071,76.125L 388.863,76.125C 383.009,71.8333 375.905,68.1875 367.55,65.2292C 359.175,62.2708 350.988,60.7917 342.967,60.7917C 334.592,60.7917 327.53,62.3958 321.78,65.6042C 316.009,68.8125 313.134,73.5833 313.134,79.8958C 313.134,85.5208 314.863,89.7292 318.363,92.5625C 321.78,95.4167 327.3,97.7292 334.925,99.5C 339.134,100.479 343.863,101.458 349.113,102.438C 354.342,103.417 358.696,104.313 362.196,105.104C 372.821,107.542 381.03,111.729 386.8,117.646C 392.55,123.646 395.425,131.604 395.425,141.5 Z " />
         <PathGeometry Figures="M 498.653,179.5C 494.361,180.625 489.673,181.542 484.59,182.292C 479.507,183.021 474.986,183.396 471.028,183.396C 457.153,183.396 446.59,179.667 439.361,172.188C 432.132,164.729 428.528,152.75 428.528,136.271L 428.528,63.9583L 413.069,63.9583L 413.069,44.7292L 428.528,44.7292L 428.528,5.64583L 451.423,5.64583L 451.423,44.7292L 498.653,44.7292L 498.653,63.9583L 451.423,63.9583L 451.423,125.917C 451.423,133.083 451.569,138.667 451.903,142.667C 452.236,146.688 453.361,150.438 455.319,153.917C 457.111,157.167 459.569,159.542 462.694,161.042C 465.819,162.542 470.569,163.292 476.986,163.292C 480.715,163.292 484.611,162.75 488.673,161.667C 492.715,160.583 495.653,159.667 497.444,158.917L 498.653,158.917L 498.653,179.5 Z " />
     </GeometryGroup>
+
+    <WrapPanel
+      x:Key="myTakeExposureDetails"
+      x:Shared="false"
+      Orientation="Horizontal">
+        <TextBlock
+          Margin="5,0,0,0"
+          VerticalAlignment="Center"
+          Text="Amount" />
+        <TextBox
+          MinWidth="40"
+          Margin="5,0,0,0"
+          VerticalAlignment="Center"
+          Text="{Binding Conditions[0].Iterations}"
+          TextAlignment="Right" />
+        <TextBlock
+          Margin="7.5,0,7.5,0"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Text="|" />
+
+        <TextBlock VerticalAlignment="Center" Text="Filter" />
+
+        <ComboBox
+          Margin="5,0,0,0"
+          DisplayMemberPath="Name"
+          SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nina:SequenceBlockView}}, Path=DataContext.Items[2].Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FilterWheelFilterConverter}}"
+          SelectedValuePath="Name">
+            <ComboBox.Resources>
+                <CollectionViewSource x:Key="Filters" Source="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.FilterWheelSettings.FilterWheelFilters}" />
+            </ComboBox.Resources>
+            <ComboBox.ItemsSource>
+                <CompositeCollection>
+                    <x:Static Member="filter:NullFilter.Instance" />
+                    <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
+                </CompositeCollection>
+            </ComboBox.ItemsSource>
+        </ComboBox>
+
+        <TextBlock
+          Margin="7.5,0,7.5,0"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Text="|" />
+
+        <StackPanel DataContext="{Binding Items[0]}" Orientation="Horizontal">
+            <StackPanel.Resources>
+                <util:BindingProxy x:Key="CameraInfo" Data="{Binding CameraInfo}" />
+            </StackPanel.Resources>
+
+            <TextBlock
+              Margin="7.5,0,7.5,0"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Text="|" />
+
+            <TextBlock VerticalAlignment="Center" Text="Binning" />
+            <ComboBox
+              Margin="5,0,0,0"
+              DisplayMemberPath="Name"
+              ItemsSource="{Binding Source={StaticResource CameraInfo}, Path=Data.BinningModes, Converter={StaticResource DefaultBinningModesConverter}}"
+              SelectedItem="{Binding Binning, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              SelectedValuePath="Name" />
+
+            <!--  List of Gain  -->
+            <WrapPanel Orientation="Horizontal">
+                <WrapPanel.Visibility>
+                    <PriorityBinding>
+                        <Binding
+                          Converter="{StaticResource CollectionContainsItemsToVisibilityConverter}"
+                          Path="Data.Gains"
+                          Source="{StaticResource CameraInfo}" />
+                        <Binding
+                          Converter="{StaticResource BooleanToVisibilityCollapsedConverter}"
+                          Path="Data.Connected"
+                          Source="{StaticResource CameraInfo}" />
+                    </PriorityBinding>
+                </WrapPanel.Visibility>
+                <TextBlock
+                  Margin="7.5,0,7.5,0"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Text="|" />
+                <TextBlock VerticalAlignment="Center" Text="Gain" />
+                <ComboBox
+                  Margin="5,0,0,0"
+                  DisplayMemberPath="Text"
+                  IsSynchronizedWithCurrentItem="True"
+                  SelectedValuePath="Text">
+                    <ComboBox.ItemsSource>
+                        <CompositeCollection>
+                            <TextBlock Text="{Binding Source={StaticResource CameraInfo}, Path=Data.DefaultGain, UpdateSourceTrigger=PropertyChanged, StringFormat=({0})}" />
+                            <CollectionContainer Collection="{Binding Source={StaticResource CameraInfo}, Path=Data.Gains, Converter={StaticResource IntListToTextBlockListConverter}}" />
+                        </CompositeCollection>
+                    </ComboBox.ItemsSource>
+                    <ComboBox.SelectedValue>
+                        <MultiBinding
+                          Converter="{StaticResource MinusOneToBaseValueConverter}"
+                          Mode="TwoWay"
+                          UpdateSourceTrigger="PropertyChanged">
+                            <Binding
+                              Mode="TwoWay"
+                              Path="Gain"
+                              UpdateSourceTrigger="PropertyChanged" />
+                            <Binding
+                              Mode="OneWay"
+                              Path="Data.DefaultGain"
+                              Source="{StaticResource CameraInfo}"
+                              UpdateSourceTrigger="PropertyChanged" />
+                        </MultiBinding>
+                    </ComboBox.SelectedValue>
+                </ComboBox>
+            </WrapPanel>
+
+            <!--  Free Gain  -->
+            <WrapPanel Orientation="Horizontal">
+                <WrapPanel.Visibility>
+                    <PriorityBinding FallbackValue="Visible">
+                        <Binding
+                          Converter="{StaticResource InverseCollectionContainsItemsToVisibilityConverter}"
+                          Path="Data.Gains"
+                          Source="{StaticResource CameraInfo}" />
+                    </PriorityBinding>
+                </WrapPanel.Visibility>
+                <TextBlock
+                  Margin="7.5,0,7.5,0"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Text="|" />
+                <TextBlock VerticalAlignment="Center" Text="Gain" />
+                <ninactrl:HintTextBox
+                  MinWidth="40"
+                  Margin="5,0,0,0"
+                  VerticalAlignment="Center"
+                  HorizontalContentAlignment="Right"
+                  VerticalContentAlignment="Center"
+                  Foreground="{StaticResource PrimaryBrush}"
+                  TextAlignment="Right">
+                    <ninactrl:HintTextBox.HintText>
+                        <Binding
+                          Converter="{StaticResource CameraDefaultValueConverter}"
+                          Mode="OneWay"
+                          Path="Data.DefaultGain"
+                          Source="{StaticResource CameraInfo}"
+                          UpdateSourceTrigger="PropertyChanged" />
+                    </ninactrl:HintTextBox.HintText>
+                    <ninactrl:HintTextBox.Text>
+                        <Binding
+                          Converter="{StaticResource MinusOneToEmptyStringConverter}"
+                          Mode="TwoWay"
+                          Path="Gain"
+                          UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <util:ShortRangeRule>
+                                    <util:ShortRangeRule.ValidRange>
+                                        <util:ShortRangeChecker Maximum="32767" Minimum="-1" />
+                                    </util:ShortRangeRule.ValidRange>
+                                </util:ShortRangeRule>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </ninactrl:HintTextBox.Text>
+                </ninactrl:HintTextBox>
+            </WrapPanel>
+
+            <!--  Offset  -->
+            <WrapPanel Orientation="Horizontal">
+                <WrapPanel.Visibility>
+                    <MultiBinding Converter="{StaticResource BooleanOrToVisibilityCollapsedMultiConverter}" FallbackValue="Visible">
+                        <Binding
+                          Converter="{StaticResource InverseBooleanConverter}"
+                          Path="Data.Connected"
+                          Source="{StaticResource CameraInfo}" />
+                        <Binding Path="Data.CanSetOffset" Source="{StaticResource CameraInfo}" />
+                    </MultiBinding>
+                </WrapPanel.Visibility>
+                <TextBlock
+                  Margin="7.5,0,7.5,0"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Text="|" />
+                <TextBlock VerticalAlignment="Center" Text="Offset" />
+                <ninactrl:HintTextBox
+                  MinWidth="40"
+                  Margin="5,0,0,0"
+                  VerticalAlignment="Center"
+                  HorizontalContentAlignment="Right"
+                  VerticalContentAlignment="Center"
+                  Foreground="{StaticResource PrimaryBrush}"
+                  TextAlignment="Right">
+                    <ninactrl:HintTextBox.HintText>
+                        <Binding
+                          Converter="{StaticResource CameraDefaultValueConverter}"
+                          Mode="OneWay"
+                          Path="Data.DefaultOffset"
+                          Source="{StaticResource CameraInfo}"
+                          UpdateSourceTrigger="PropertyChanged" />
+                    </ninactrl:HintTextBox.HintText>
+                    <ninactrl:HintTextBox.Text>
+                        <Binding
+                          Converter="{StaticResource MinusOneToEmptyStringConverter}"
+                          Mode="TwoWay"
+                          Path="Offset"
+                          UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <util:ShortRangeRule>
+                                    <util:ShortRangeRule.ValidRange>
+                                        <util:ShortRangeChecker Maximum="32767" Minimum="-1" />
+                                    </util:ShortRangeRule.ValidRange>
+                                </util:ShortRangeRule>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </ninactrl:HintTextBox.Text>
+                </ninactrl:HintTextBox>
+            </WrapPanel>
+        </StackPanel>
+    </WrapPanel>
 
     <DataTemplate DataType="{x:Type local:SkyflatsTrigger}">
         <nina:SequenceBlockView>
@@ -48,50 +265,170 @@
     <DataTemplate DataType="{x:Type local:TakeSkyFlats}">
         <nina:SequenceBlockView>
             <nina:SequenceBlockView.SequenceItemContent>
-                <StackPanel Orientation="Horizontal">
 
-                    <TextBlock Text="Filter" Margin="0,0,10,0" VerticalAlignment="Center" />
+                <StackPanel Orientation="Vertical">
+                    <WrapPanel Orientation="Horizontal">
 
-                    <ComboBox
-                        Margin="5,0,0,0"
-                        DisplayMemberPath="Name"
-                        SelectedItem="{Binding Filter}"
-                        SelectedValuePath="Name">
-                        <ComboBox.Resources>
-                            <CollectionViewSource x:Key="Filters" Source="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.FilterWheelSettings.FilterWheelFilters}" />
-                        </ComboBox.Resources>
-                        <ComboBox.ItemsSource>
-                            <CompositeCollection>
-                                <x:Static Member="filter:NullFilter.Instance" />
-                                <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
-                            </CompositeCollection>
-                        </ComboBox.ItemsSource>
-                    </ComboBox>
+                        <TextBlock
+                          Margin="5,0,0,0"
 
-                    <TextBlock Text=" | SQM " Margin="10,0,0,0" VerticalAlignment="Center" />
-
-                    <TextBox
+                          VerticalAlignment="Center"
+                          Text="SQM" />
+                        <ninactrl:UnitTextBox
                          MinWidth="40"
                          Margin="5,0,0,0"
-                         Text="{Binding SQMThresholdMin}"
-                         TextAlignment="Right" />
-
-                    <TextBlock Text=" to " Margin="10,0,0,0" VerticalAlignment="Center" />
-                    <TextBox
-                         MinWidth="40"
-                         Margin="5,0,0,0"
-                         Text="{Binding SQMThresholdMax}"
-                         TextAlignment="Right" />
-                    <ninactrl:UnitTextBox
-                         MinWidth="60"
-                         Margin="10,0,0,0"
-                         HorizontalAlignment="Left"
                          VerticalAlignment="Center"
+                         Text="{Binding SQMStart}"
+                         TextAlignment="Right" />
 
-                         Unit="mag/arcsec²">
-                    </ninactrl:UnitTextBox>
+                        <TextBlock
+                          Margin="5,0,0,0"
+
+                          VerticalAlignment="Center"
+                          Text="-" />
+
+                        <ninactrl:UnitTextBox
+                          MinWidth="40"
+                          Margin="5,0,0,0"
+                          VerticalAlignment="Center"
+                          Text="{Binding SQMEnd}"
+                          TextAlignment="Right"
+                          Unit="mag/arcsec²" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Min. exp." />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding MinExposure}"
+                            TextAlignment="Right"
+                            Unit="s" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="max. exp." />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding MaxExposure}"
+                            TextAlignment="Right"
+                            Unit="s" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Histogram mean target" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding HistogramTargetPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentageConverter}}"
+                            TextAlignment="Right"
+                            Unit="%" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Mean tolerance" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding HistogramTolerancePercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentageConverter}}"
+                            TextAlignment="Right"
+                            Unit="%" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|" />
+
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Dither" />
+                        <CheckBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding ShouldDither, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Dither pixels"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding DitherPixels, Mode=TwoWay}"
+                            Unit="px"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Min. settle time"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding DitherSettleTime, Mode=TwoWay}"
+                            Unit="s"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                        <TextBlock
+                            Margin="7.5,0,7.5,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="|"
+                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
+                    </WrapPanel>
+
+                    <ContentPresenter Content="{StaticResource myTakeExposureDetails}" DataContext="{Binding ImagingContainer}" />
                 </StackPanel>
             </nina:SequenceBlockView.SequenceItemContent>
+            <nina:SequenceBlockView.SequenceItemProgressContent>
+                <WrapPanel DataContext="{Binding ImagingContainer}" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="Progress" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding Conditions[0].CompletedIterations}" />
+                    <TextBlock VerticalAlignment="Center" Text="/" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding Conditions[0].Iterations}" />
+                </WrapPanel>
+            </nina:SequenceBlockView.SequenceItemProgressContent>
         </nina:SequenceBlockView>
     </DataTemplate>
 
