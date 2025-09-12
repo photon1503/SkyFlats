@@ -95,9 +95,9 @@ namespace Photon.NINA.Skyflats {
             HistogramTolerancePercentage = 0.1;
             MaxExposure = 10;
             MinExposure = 0;
-            ShouldDither = false;
+            ShouldDither = true;
             SQMEnd = 15.5;
-            SQMStart = 15;
+            SQMStart = 13;
         }
 
         private TakeSkyFlats(
@@ -245,6 +245,22 @@ namespace Photon.NINA.Skyflats {
                 return;
             }
 
+            // Create a linked cancellation token source
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+
+            // Start monitoring the SQM in a background task
+            var monitorTask = Task.Run(async () => {
+                while (!cts.Token.IsCancellationRequested) {
+                    if (weatherDataMediator.GetInfo().SkyQuality >= SQMEnd ||
+                        weatherDataMediator.GetInfo().SkyQuality < SQMStart) {
+                        Notification.ShowInformation("Sky flats sequence was cancelled due to SQM out of bounds (1).");
+                        cts.Cancel();
+                        break;
+                    }
+                    await Task.Delay(1000, cts.Token);
+                }
+            }, cts.Token);
+
             try {
                 DeterminedHistogramADU = 0;
                 var loop = GetIterations();
@@ -259,7 +275,7 @@ namespace Photon.NINA.Skyflats {
                 todayTwilight = twilightCalculator.GetTwilightDuration(DateTime.Now, profileService.ActiveProfile.AstrometrySettings.Latitude, profileService.ActiveProfile.AstrometrySettings.Longitude, 0d).TotalMilliseconds;
 
                 Logger.Info($"Determining Sky Flat Exposure Time. Min {MinExposure}, Max {MaxExposure}, Target {HistogramTargetPercentage * 100}%, Tolerance {HistogramTolerancePercentage * 100}%");
-                var exposureDetermination = await DetermineExposureTime(MinExposure, MaxExposure, progress, token);
+                var exposureDetermination = await DetermineExposureTime(MinExposure, MaxExposure, progress, cts.Token);
 
                 if (exposureDetermination is null) {
                     throw new SequenceEntityFailedException("Failed to determine exposure time for sky flats");
@@ -269,8 +285,13 @@ namespace Photon.NINA.Skyflats {
                 }
 
                 exposureDetermination.CameraIsLinear = cameraIsLinear;
-                await TakeSkyFlatsSeq(exposureDetermination, progress, token);
+                await TakeSkyFlatsSeq(exposureDetermination, progress, cts.Token);
+            } catch (OperationCanceledException) {
+                Logger.Info("Sky flats sequence was cancelled due to SQM out of bounds.");
+                throw;
             } finally {
+                cts.Cancel(); // Ensure monitor task exits
+                try { await monitorTask; } catch { /* ignore */ }
                 await CoreUtil.Wait(TimeSpan.FromMilliseconds(500));
                 progress?.Report(new ApplicationStatus() { Source = Loc.Instance["Lbl_SequenceItem_FlatDevice_SkyFlat_Name"] });
             }
