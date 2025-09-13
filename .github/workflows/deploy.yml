@@ -11,7 +11,7 @@ env:
   # Adjust this to your plugin title
   PLUGIN_NAME: "Skyflats"
   PLUGIN_DLL_NAME: "Photon.NINA.Skyflats"
-  PLUGIN_MANIFEST_PATH: "s/Skyflats/3.0.0"
+  PLUGIN_MANIFEST_PATH: "s/Skyflats"
   PLUGIN_SLN_NAME: "Skyflats"
 
 jobs:
