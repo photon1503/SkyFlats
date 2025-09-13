@@ -46,7 +46,7 @@ using System.Runtime.InteropServices;
 
 //[Optional] The url to a featured logo that will be displayed in the plugin list next to the name
 
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://github.com/photon1503/SkyFlats/blob/efb79a7cb68cf32549b86a81cd31e2b07cfcff83/skyflats.png?raw=true")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://github.com/photon1503/SkyFlats/blob/845aed3a7f4280b510266c250e82ba986e7d99e1/skyflats.png?raw=true")]
 //[Optional] A url to an example screenshot of your plugin in action
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 //[Optional] An additional url to an example example screenshot of your plugin in action

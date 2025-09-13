@@ -18,9 +18,10 @@
             TextWrapping="Wrap" />
 
                 <StackPanel Orientation="Horizontal" Margin="16,4">
-                    <CheckBox IsChecked="{Binding ReslewToNullPoint}" VerticalAlignment="Center" />
+
                     <TextBlock Text="Re-slew to Null point while taking Sky Flats"
-                          Margin="8,0,0,0" VerticalAlignment="Center" />
+                          Margin="8,0,0,0" VerticalAlignment="Center" MinWidth="250" />
+                    <CheckBox IsChecked="{Binding ReslewToNullPoint}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="36,4">
@@ -39,9 +40,10 @@
                            TextWrapping="Wrap" />
 
                 <StackPanel Orientation="Horizontal" Margin="16,4">
-                    <CheckBox IsChecked="{Binding UseDithering}" VerticalAlignment="Center" />
+
                     <TextBlock Text="Use Dithering while taking Sky Flats"
-                          Margin="8,0,0,0" VerticalAlignment="Center" />
+                          Margin="8,0,0,0" VerticalAlignment="Center" MinWidth="250" />
+                    <CheckBox IsChecked="{Binding UseDithering}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <Grid Margin="36,8,0,0">
