@@ -283,7 +283,6 @@
 
                         <TextBlock
                           Margin="5,0,0,0"
-
                           VerticalAlignment="Center"
                           Text="-" />
 
@@ -294,21 +293,16 @@
                           Text="{Binding SQMEnd}"
                           TextAlignment="Right"
                           Unit="mag/arcsec²" />
+                        <TextBlock
+                           Margin="7.5,0,7.5,0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Text="|" />
 
                         <TextBlock
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
-                            Text="Null Point" />
-                        <CheckBox
-                            MinWidth="40"
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            IsChecked="{Binding ReCenterNullPoint, Mode=TwoWay}" />
-
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="Min. exp." />
+                            Text="Exposure " />
                         <ninactrl:UnitTextBox
                             MinWidth="40"
                             Margin="5,0,0,0"
@@ -316,16 +310,12 @@
                             Text="{Binding MinExposure}"
                             TextAlignment="Right"
                             Unit="s" />
-                        <TextBlock
-                            Margin="7.5,0,7.5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="|" />
 
                         <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="max. exp." />
+                          Margin="5,0,0,0"
+                          VerticalAlignment="Center"
+                          Text="-" />
+
                         <ninactrl:UnitTextBox
                             MinWidth="40"
                             Margin="5,0,0,0"
@@ -367,62 +357,6 @@
                             Text="{Binding HistogramTolerancePercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentageConverter}}"
                             TextAlignment="Right"
                             Unit="%" />
-                        <TextBlock
-                            Margin="7.5,0,7.5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="|" />
-
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="Dither" />
-                        <CheckBox
-                            MinWidth="40"
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            IsChecked="{Binding ShouldDither, Mode=TwoWay}" />
-                        <TextBlock
-                            Margin="7.5,0,7.5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="|" />
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="Dither pixels"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
-                        <ninactrl:UnitTextBox
-                            MinWidth="40"
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="{Binding DitherPixels, Mode=TwoWay}"
-                            Unit="px"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
-                        <TextBlock
-                            Margin="7.5,0,7.5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="|"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="Min. settle time"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
-                        <ninactrl:UnitTextBox
-                            MinWidth="40"
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="{Binding DitherSettleTime, Mode=TwoWay}"
-                            Unit="s"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
-                        <TextBlock
-                            Margin="7.5,0,7.5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="|"
-                            Visibility="{Binding ShouldDither, Converter={StaticResource VisibilityConverter}}" />
                     </WrapPanel>
 
                     <ContentPresenter Content="{StaticResource myTakeExposureDetails}" DataContext="{Binding ImagingContainer}" />

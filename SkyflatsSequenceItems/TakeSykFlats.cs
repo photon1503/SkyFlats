@@ -10,6 +10,7 @@ using NINA.Equipment.Interfaces.Mediator;
 using NINA.Equipment.Model;
 using NINA.Image.ImageAnalysis;
 using NINA.Image.ImageData;
+using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.Sequencer.Conditions;
 using NINA.Sequencer.Container;
@@ -29,6 +30,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Settings = Photon.NINA.Skyflats.Properties.Settings;
 
 namespace Photon.NINA.Skyflats {
 
@@ -95,7 +97,7 @@ namespace Photon.NINA.Skyflats {
             HistogramTolerancePercentage = 0.1;
             MaxExposure = 10;
             MinExposure = 0;
-            ShouldDither = true;
+            //ShouldDither = true;
             SQMEnd = 15.5;
             SQMStart = 13;
             ReCenterNullPoint = true;
@@ -120,8 +122,6 @@ namespace Photon.NINA.Skyflats {
             this.twilightCalculator = twilightCalculator;
             this.telescopeMediator = telescopeMediator;
             this.weatherDataMediator = weatherDataMediator;
-            ditherPixels = profileService.ActiveProfile.GuiderSettings.DitherPixels;
-            ditherSettleTime = profileService.ActiveProfile.GuiderSettings.SettleTime;
 
             this.Add(new Annotation());
             this.Add(new Annotation());
@@ -136,8 +136,6 @@ namespace Photon.NINA.Skyflats {
             IsExpanded = false;
             if (cloneMe != null) {
                 CopyMetaData(cloneMe);
-                DitherPixels = cloneMe.DitherPixels;
-                DitherSettleTime = cloneMe.DitherSettleTime;
             }
         }
 
@@ -223,7 +221,6 @@ namespace Photon.NINA.Skyflats {
                 MinExposure = this.MinExposure,
                 HistogramTargetPercentage = this.HistogramTargetPercentage,
                 HistogramTolerancePercentage = this.HistogramTolerancePercentage,
-                ShouldDither = this.ShouldDither
             };
             return clone;
         }
@@ -540,40 +537,8 @@ namespace Photon.NINA.Skyflats {
             }
         }
 
-        private bool shouldDither;
         private double springTwilight;
         private double todayTwilight;
-
-        [JsonProperty]
-        public bool ShouldDither {
-            get => shouldDither;
-            set {
-                shouldDither = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private double ditherPixels;
-
-        [JsonProperty]
-        public double DitherPixels {
-            get => ditherPixels;
-            set {
-                ditherPixels = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private double ditherSettleTime;
-
-        [JsonProperty]
-        public double DitherSettleTime {
-            get => ditherSettleTime;
-            set {
-                ditherSettleTime = value;
-                RaisePropertyChanged();
-            }
-        }
 
         public override bool Validate() {
             var switchFilter = GetSwitchFilterItem();
@@ -583,7 +548,7 @@ namespace Photon.NINA.Skyflats {
 
             var issues = new ObservableCollection<string>();
 
-            if (ShouldDither) {
+            if (Settings.Default.UseDithering) {
                 var info = telescopeMediator.GetInfo();
                 if (!info.Connected) {
                     issues.Add(Loc.Instance["Lbl_SequenceItem_FlatDevice_SkyFlat_Validation_Dither_MountNotConnected"]);
@@ -669,7 +634,7 @@ namespace Photon.NINA.Skyflats {
 
                 var imageData = await exposureData.ToImageData(progress, token);
 
-                if (ShouldDither && i < (GetIterations().Iterations - 1)) {
+                if (Settings.Default.UseDithering && i < (GetIterations().Iterations - 1)) {
                     ditherTask = Dither(progress, token);
                 }
 
@@ -730,7 +695,7 @@ namespace Photon.NINA.Skyflats {
                 using (var directGuider = new DirectGuider(profileService, telescopeMediator)) {
                     await directGuider.Connect(token);
                     await directGuider.StartGuiding(false, null, token);
-                    await directGuider.Dither(DitherPixels, TimeSpan.FromSeconds(DitherSettleTime), false, progress, token);
+                    await directGuider.Dither(Settings.Default.DitherArcsec, TimeSpan.FromSeconds(Settings.Default.DitherSettleTime), false, progress, token);
                     await directGuider.StopGuiding(token);
                     directGuider.Disconnect();
                 }
