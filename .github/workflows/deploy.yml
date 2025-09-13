@@ -9,8 +9,10 @@ permissions:
   
 env:
   # Adjust this to your plugin title
-  PLUGIN_NAME: "Photon.NINA.Skyflats"
+  PLUGIN_NAME: "Skyflats"
+  PLUGIN_DLL_NAME: "Photon.NINA.Skyflats"
   PLUGIN_MANIFEST_PATH: "s/Skyflats/3.0.0"
+  PLUGIN_SLN_NAME: "Skyflats"
 
 jobs:
   build-and-release:
@@ -40,7 +42,7 @@ jobs:
       - name: Build .NET Assemblies
         run: |
           dotnet restore
-          dotnet build ${{ env.PLUGIN_NAME }}.sln -c Release -p:PostBuildEvent= -p:Version=${{ steps.get_version.outputs.version }}
+          dotnet build ${{ env.PLUGIN_SLN_NAME }}.sln -c Release -p:PostBuildEvent= -p:Version=${{ steps.get_version.outputs.version }}
 
       # If you have mkdocs documentation you want to include, you can uncomment and build it like this
       # - name: Build Documentation
@@ -54,13 +56,13 @@ jobs:
       # Add all necessary files that the plugin needs to the packages folder - basically all items that are normally in your post build event on your local builds
       - name: Prepare package
         run: |
-          Copy-Item "${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.dll" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.dll" -Force
-          Copy-Item "${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.pdb" -Force
+          Copy-Item "${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.dll" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.dll" -Force
+          Copy-Item "${{ env.PLUGIN_NAME }}/bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.pdb" -Force
       
       - name: Create Plugin archives and manifests
         run: |
           curl -LO https://raw.githubusercontent.com/isbeorn/nina.plugin.manifests/refs/heads/main/tools/CreateManifest.ps1?raw=true
-          pwsh CreateManifest.ps1 -file "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.dll" -installerUrl "https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/${{ env.PLUGIN_NAME }}.${{ steps.get_version.outputs.version }}.zip" -createArchive -includeAll -appendVersionToArchive
+          pwsh CreateManifest.ps1 -file "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_DLL_NAME }}.dll" -installerUrl "https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/${{ env.PLUGIN_NAME }}.${{ steps.get_version.outputs.version }}.zip" -createArchive -includeAll -appendVersionToArchive
           
           
       - name: List files for debugging
