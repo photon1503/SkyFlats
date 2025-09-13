@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NINA.Astrometry.Interfaces;
 using NINA.Core.Locale;
 using NINA.Core.Model;
@@ -283,6 +284,11 @@ namespace Photon.NINA.Skyflats {
                 springTwilight = twilightCalculator.GetTwilightDuration(new DateTime(DateTime.Now.Year, 03, 20), 30.0, 0d, 0d).TotalMilliseconds;
                 todayTwilight = twilightCalculator.GetTwilightDuration(DateTime.Now, profileService.ActiveProfile.AstrometrySettings.Latitude, profileService.ActiveProfile.AstrometrySettings.Longitude, 0d).TotalMilliseconds;
 
+                if (Settings.Default.ReslewToNullPoint) {
+                    CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
+                    await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+                }
+
                 Logger.Info($"Determining Sky Flat Exposure Time. Min {MinExposure}, Max {MaxExposure}, Target {HistogramTargetPercentage * 100}%, Tolerance {HistogramTolerancePercentage * 100}%");
                 var exposureDetermination = await DetermineExposureTime(MinExposure, MaxExposure, progress, cts.Token);
 
@@ -318,6 +324,13 @@ namespace Photon.NINA.Skyflats {
             int linearTestAttempts = 0;
             double _targetADU = 0;
             var exposureAduPairs = new List<(double exposure, double adu)>();
+
+            if (Settings.Default.ReslewToNullPoint) {
+                // Initial slew before the loop
+                CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
+                await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, ct);
+            }
+
             for (var iterations = 0; iterations <= 20; iterations++) {
                 var exposureTime = Math.Round((currentMax + currentMin) / 2d, 5);
 
@@ -602,7 +615,22 @@ namespace Photon.NINA.Skyflats {
             GetIterations().ResetProgress();
             // we start at exposure + 1, as DetermineExposureTime is already saving an exposure
             GetIterations().CompletedIterations++;
+
+            Stopwatch reslewTimer = null;
+            if (Settings.Default.ReslewToNullPoint) {
+                reslewTimer = Stopwatch.StartNew();
+                // Initial slew before the loop
+                CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
+                await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+            }
+
             for (var i = 1; i < GetIterations().Iterations; i++) {
+                // Re-slew every 30 seconds, but only if enabled
+                if (Settings.Default.ReslewToNullPoint && reslewTimer != null && reslewTimer.Elapsed.TotalSeconds >= Settings.Default.ReslewEverySeconds) {
+                    CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
+                    await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+                    reslewTimer.Restart();
+                }
                 GetIterations().CompletedIterations++;
 
                 var filter = GetSwitchFilterItem().Filter;

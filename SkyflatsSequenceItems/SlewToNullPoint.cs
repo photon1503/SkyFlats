@@ -109,43 +109,8 @@ namespace Photon.NINA.Skyflats {
                 throw new SequenceEntityFailedException(Loc.Instance["LblTelescopeParkedWarning"]);
             }
 
-            InputTopocentricCoordinates nullPoint = null;
-
-            nullPoint = new InputTopocentricCoordinates(Angle.ByDegree(profileService.ActiveProfile.AstrometrySettings.Latitude),
-                        Angle.ByDegree(profileService.ActiveProfile.AstrometrySettings.Longitude),
-                        profileService.ActiveProfile.AstrometrySettings.Elevation);
-
-            // get sun azimuth
-
-            double jd = AstroUtil.GetJulianDate(DateTime.Now);
-
-            ObserverInfo observer = new ObserverInfo();
-            observer.Latitude = profileService.ActiveProfile.AstrometrySettings.Latitude;
-            observer.Longitude = profileService.ActiveProfile.AstrometrySettings.Longitude;
-            observer.Elevation = profileService.ActiveProfile.AstrometrySettings.Elevation;
-
-            NOVAS.SkyPosition sun = AstroUtil.GetSunPosition(DateTime.UtcNow, jd, observer);
-            var siderealTime = AstroUtil.GetLocalSiderealTime(DateTime.Now, observer.Longitude);
-            var hourAngle = AstroUtil.HoursToDegrees(AstroUtil.GetHourAngle(siderealTime, sun.RA));
-
-            double alt = AstroUtil.GetAltitude(hourAngle, observer.Latitude, sun.Dec);
-            double az = AstroUtil.GetAzimuth(hourAngle, alt, observer.Latitude, sun.Dec);
-
-            nullPoint.AzDegrees = (int)NormalizeAngle(az + 180); // point to the opposite direction of the sun
-            nullPoint.AltDegrees = 75; // offset 15 degrees from zenith
-
-            await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Coordinates, token);
-        }
-
-        /// <summary>
-        /// Normalize angle to range 0-360
-        /// </summary>
-        /// <param name="angle"></param>
-        /// <returns></returns>
-        private double NormalizeAngle(double angle) {
-            angle = angle % 360;
-            if (angle < 0) angle += 360;
-            return angle;
+            CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
+            await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
         }
 
         /// <summary>
