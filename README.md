@@ -50,7 +50,7 @@ SkyFlats uses a powerful trigger-based system to automate the entire flat acquis
 
 #### Slew to null point
 ![alt text](image-5.png)
-A generic instruction to position the telescope, might be useful if the SQM is mounted on the OTA.
+A generic instruction to slew the telescope to the null point, where sky brightness is most uniform
 
 #### Master Loop Trigger
 ![alt text](image-2.png)
