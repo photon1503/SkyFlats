@@ -52,14 +52,14 @@ SkyFlats uses a powerful trigger-based system to automate the entire flat acquis
 ![alt text](image-5.png)
 A generic instruction to position the telescope, might be useful if the SQM is mounted on the OTA.
 
-#### Master Loop Trigger
+#### Master Loop Condition
 ![alt text](image-2.png)
 - **Condition**: `SQM loop while [brighter/darker] than [value] mag/arcsec²`
 - **Purpose**: Creates the main container for the flat acquisition sequence
 - **Function**: Continuously executes the enclosed instructions as long as the specified sky brightness condition is met
 - **Termination**: Automatically stops the sequence when the sky brightness exceeds the threshold, preventing unnecessary operation
 
-#### Wait Triggers
+#### Wait Instruction
 ![alt text](image-3.png)
 - **Condition**: `Wait until SQM [brighter/darker] than [value] mag/arcsec²`
 - **Purpose**: Precision timing for filter-specific flat acquisition
@@ -84,6 +84,7 @@ A generic instruction to position the telescope, might be useful if the SQM is m
   - `Binning [mode]`
   - `Gain [value]`
   - `Offset [value]`
+- **Null point** and **Dither** settings will be taken from the plugin options!
   
 
 
