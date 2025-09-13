@@ -35,29 +35,39 @@ SkyFlats implements methodologies established in astronomical literature for obt
 4. Restart NINA 
 
 
-## Configuration Options
+## Plugin Options
 
 - **Null Point Tracking**: Enable/disable and set re-slew interval
 - **Dithering**: Enable/disable, set dither amount and settle time
+![alt text](image.png)
 
 
-- ### Sequence Triggers and Instructions (Generic Description)
+### Sequence Triggers and Instructions 
 
 SkyFlats uses a powerful trigger-based system to automate the entire flat acquisition process. The sequence is built around Sky Quality Meter (SQM) readings as the primary environmental condition.
 
+![alt text](image-1.png)
+
+#### Slew to null point
+![alt text](image-5.png)
+A generic instruction to position the telescope, might be useful if the SQM is mounted on the OTA.
+
 #### Master Loop Trigger
+![alt text](image-2.png)
 - **Condition**: `SQM loop while [brighter/darker] than [value] mag/arcsec²`
 - **Purpose**: Creates the main container for the flat acquisition sequence
 - **Function**: Continuously executes the enclosed instructions as long as the specified sky brightness condition is met
 - **Termination**: Automatically stops the sequence when the sky brightness exceeds the threshold, preventing unnecessary operation
 
 #### Wait Triggers
+![alt text](image-3.png)
 - **Condition**: `Wait until SQM [brighter/darker] than [value] mag/arcsec²`
 - **Purpose**: Precision timing for filter-specific flat acquisition
 - **Function**: Pauses sequence execution until the exact sky brightness level is reached
 - **Application**: Ensures each filter captures flats at its optimal brightness window
 
 #### Flat Acquisition Instructions
+![alt text](image-4.png)
 - **SQM Range**: `[min] - [max] mag/arcsec²`
   - Defines the precise sky brightness window for capture
 - **Exposure Range**: `[min] - [max] seconds`
