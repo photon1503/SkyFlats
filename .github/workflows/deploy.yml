@@ -28,9 +28,7 @@ jobs:
           mkdir packages
           mkdir packages/${{ env.PLUGIN_NAME }}
           
-      - name: List files for debugging
-        run: |
-            ls -R .
+
             
       - name: Get Assembly Version
         id: get_version
@@ -52,12 +50,15 @@ jobs:
       #     pip install mkdocs-material
       #     mkdocs build -f ${{ PLUGIN_NAME }}\docs\mkdocs.yml
 
-
+      - name: List files for debugging
+        run: |
+            ls -R .
+            
       # Add all necessary files that the plugin needs to the packages folder - basically all items that are normally in your post build event on your local builds
       - name: Prepare package
         run: |
-          Copy-Item "$bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.dll" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.dll" -Force
-          Copy-Item "$bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.pdb" -Force
+          Copy-Item "bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.dll" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.dll" -Force
+          Copy-Item "bin/Release/net8.0-windows/${{ env.PLUGIN_DLL_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_NAME }}.pdb" -Force
       
       - name: Create Plugin archives and manifests
         run: |
