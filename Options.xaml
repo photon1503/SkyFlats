@@ -14,7 +14,7 @@
                 <TextBlock Text="Null Point" FontSize="16" FontWeight="Bold" Margin="0,0,0,6" />
 
                 <TextBlock FontSize="10"
-                    Text="The null point is a specific position in the sky where the polarization of twilight sky background is minimized. This occurs approximately 90 degrees from the Sun, where sky brightness is more uniform. Taking flat fields at this null point position reduces polarization effects that can create systematic errors in flat field calibration, resulting in more accurate and consistent flat fields.\n\nReference: Chromey, F. R., &amp; Hasselbacher, D. A. 1996, PASP, 108, 944"
+                    Text="The null point is a specific position in the sky where the polarization of twilight sky background is minimized. This occurs approximately 90 degrees from the Sun, where sky brightness is more uniform. Taking flat fields at this null point position reduces polarization effects that can create systematic errors in flat field calibration, resulting in more accurate and consistent flat fields."
             TextWrapping="Wrap" />
 
                 <StackPanel Orientation="Horizontal" Margin="16,4">
