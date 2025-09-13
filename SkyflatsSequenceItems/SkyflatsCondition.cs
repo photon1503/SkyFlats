@@ -25,7 +25,7 @@ namespace Photon.NINA.Skyflats {
     /// </summary>
     [ExportMetadata("Name", "SQM loop while")]
     [ExportMetadata("Description", "Loop while the SQM is brighter/darker than the defined value")]
-    [ExportMetadata("Icon", "Plugin_Test_SVG")]
+    [ExportMetadata("Icon", "Plugin_Skyflats_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceCondition))]
     [JsonObject(MemberSerialization.OptIn)]

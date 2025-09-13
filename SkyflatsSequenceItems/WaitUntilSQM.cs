@@ -37,7 +37,7 @@ namespace Photon.NINA.Skyflats {
     /// </summary>
     [ExportMetadata("Name", "Wait until SQM")]
     [ExportMetadata("Description", "This item will just show a notification and is just there to show how the plugin system works")]
-    [ExportMetadata("Icon", "Plugin_Test_SVG")]
+    [ExportMetadata("Icon", "Plugin_Skyflats_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]

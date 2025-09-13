@@ -47,7 +47,7 @@ namespace Photon.NINA.Skyflats {
     /// </summary>
     [ExportMetadata("Name", "Take Sky Flats")]
     [ExportMetadata("Description", "This item will just show a notification and is just there to show how the plugin system works")]
-    [ExportMetadata("Icon", "Plugin_Test_SVG")]
+    [ExportMetadata("Icon", "Plugin_Skyflats_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceItem))]
     [Export(typeof(ISequenceContainer))]

@@ -29,7 +29,7 @@ namespace Photon.NINA.Skyflats {
     /// </summary>
     [ExportMetadata("Name", "Take Skyflats")]
     [ExportMetadata("Description", "This trigger will show a notification when a random generated number is even on evaluation")]
-    [ExportMetadata("Icon", "Plugin_Test_SVG")]
+    [ExportMetadata("Icon", "Plugin_Skyflats_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceTrigger))]
     [JsonObject(MemberSerialization.OptIn)]
