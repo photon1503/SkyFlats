@@ -18,10 +18,10 @@ using System.Runtime.InteropServices;
 // The following attributes are not required for the plugin per se, but are required by the official manifest meta data
 
 // Your name
-[assembly: AssemblyCompany("photon")]
+[assembly: AssemblyCompany("Gerald Hitz (@photon)")]
 // The product name that this plugin is part of
 [assembly: AssemblyProduct("SkyFlats")]
-[assembly: AssemblyCopyright("Copyright © 2025 photon")]
+[assembly: AssemblyCopyright("Copyright © 2025")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
 [assembly: AssemblyMetadata("MinimumApplicationVersion", "3.0.0.2017")]
@@ -36,7 +36,7 @@ using System.Runtime.InteropServices;
 // The following attributes are optional for the official manifest meta data
 
 //[Optional] Your plugin homepage URL - omit if not applicaple
-[assembly: AssemblyMetadata("Homepage", "tbd")]
+[assembly: AssemblyMetadata("Homepage", "https://github.com/photon1503/SkyFlats")]
 
 //[Optional] Common tags that quickly describe your plugin
 [assembly: AssemblyMetadata("Tags", "skyflats")]
