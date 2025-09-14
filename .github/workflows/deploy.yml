@@ -136,4 +136,5 @@ jobs:
           cd nina.plugin.manifests                  
           git add .
           git commit -m "Add manifest for release ${{ steps.get_version.outputs.version }}"
+          git pull --rebase origin "${{ env.PLUGIN_NAME_SANITIZED }}/${{ github.ref_name }}"
           git push origin "${{ env.PLUGIN_NAME_SANITIZED }}/${{ github.ref_name }}"
