@@ -62,12 +62,6 @@
             </ComboBox.ItemsSource>
         </ComboBox>
 
-        <TextBlock
-          Margin="7.5,0,7.5,0"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center"
-          Text="|" />
-
         <StackPanel DataContext="{Binding Items[0]}" Orientation="Horizontal">
             <StackPanel.Resources>
                 <util:BindingProxy x:Key="CameraInfo" Data="{Binding CameraInfo}" />
@@ -239,33 +233,6 @@
             </WrapPanel>
         </StackPanel>
     </WrapPanel>
-
-    <DataTemplate DataType="{x:Type local:SkyflatsTrigger}">
-        <nina:SequenceBlockView>
-            <nina:SequenceBlockView.SequenceItemContent>
-
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Filter" Margin="0,0,10,0" VerticalAlignment="Center" />
-
-                    <ComboBox
-                        Margin="5,0,0,0"
-                        DisplayMemberPath="Name"
-                        SelectedItem="{Binding myFilter}"
-                        SelectedValuePath="Name">
-                        <ComboBox.Resources>
-                            <CollectionViewSource x:Key="Filters" Source="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.FilterWheelSettings.FilterWheelFilters}" />
-                        </ComboBox.Resources>
-                        <ComboBox.ItemsSource>
-                            <CompositeCollection>
-                                <x:Static Member="filter:NullFilter.Instance" />
-                                <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
-                            </CompositeCollection>
-                        </ComboBox.ItemsSource>
-                    </ComboBox>
-                </StackPanel>
-            </nina:SequenceBlockView.SequenceItemContent>
-        </nina:SequenceBlockView>
-    </DataTemplate>
 
     <!--  The definition of the plugin test instruction style  -->
     <!--  The DataType has to be defined as the instruction in context  -->

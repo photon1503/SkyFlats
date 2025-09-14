@@ -36,7 +36,7 @@ namespace Photon.NINA.Skyflats {
     /// If the item has some preconditions that should be validated, it shall also extend the IValidatable interface and add the validation logic accordingly.
     /// </summary>
     [ExportMetadata("Name", "Wait until SQM")]
-    [ExportMetadata("Description", "This item will just show a notification and is just there to show how the plugin system works")]
+    [ExportMetadata("Description", "Waits until the SQM is brighter/darker than the defined threshold")]
     [ExportMetadata("Icon", "Plugin_Skyflats_SVG")]
     [ExportMetadata("Category", "SkyFlats")]
     [Export(typeof(ISequenceItem))]
