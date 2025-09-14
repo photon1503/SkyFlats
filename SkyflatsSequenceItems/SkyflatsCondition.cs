@@ -114,7 +114,8 @@ namespace Photon.NINA.Skyflats {
                 Icon = Icon,
                 Name = Name,
                 Category = Category,
-                Description = Description
+                SQMOperator = SQMOperator,
+                SQMThreshold = SQMThreshold
             };
         }
 

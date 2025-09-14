@@ -148,7 +148,10 @@ namespace Photon.NINA.Skyflats {
         /// </summary>
         /// <returns></returns>
         public override object Clone() {
-            return new WaitUntilSQM(this);
+            return new WaitUntilSQM(this) {
+                SQMOperator = SQMOperator,
+                SQMThreshold = SQMThreshold
+            };
         }
 
         /// <summary>
