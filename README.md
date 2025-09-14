@@ -19,6 +19,9 @@ SkyFlats implements methodologies established in astronomical literature for obt
 - **Uniform Sky Brightness**: Ensures more consistent sky brightness for superior flat field calibration
 - **Configurable Interval**: Default re-slew every 30 seconds (configurable)
 
+  Note: We are using here the **Zenith-Anti-Solar Point Compromise**, which is near the zenith, offset to the anti-solar horizon.
+  The true null point would be 90° apart from the sun, at the same altitude as the sun. 
+
 
 
 ### SQM-Based Filter Sequencing
