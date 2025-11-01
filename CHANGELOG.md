@@ -1,5 +1,8 @@
 ﻿# SkyFlats
 
+## 1.0.0.4
+- Expliclity turn on tracking after slewing to null point
+
 ## 1.0.0.3
 2025-09-14
 - Fixed SQM Wait and SQM while condition
