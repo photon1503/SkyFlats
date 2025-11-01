@@ -111,6 +111,7 @@ namespace Photon.NINA.Skyflats {
 
             CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
             await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+            telescopeMediator.SetTrackingEnabled(true);
         }
 
         /// <summary>

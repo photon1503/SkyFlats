@@ -287,6 +287,7 @@ namespace Photon.NINA.Skyflats {
                 if (Settings.Default.ReslewToNullPoint) {
                     CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
                     await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+                    telescopeMediator.SetTrackingEnabled(true);
                 }
 
                 Logger.Info($"Determining Sky Flat Exposure Time. Min {MinExposure}, Max {MaxExposure}, Target {HistogramTargetPercentage * 100}%, Tolerance {HistogramTolerancePercentage * 100}%");
@@ -329,6 +330,7 @@ namespace Photon.NINA.Skyflats {
                 // Initial slew before the loop
                 CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
                 await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, ct);
+                telescopeMediator.SetTrackingEnabled(true);
             }
 
             for (var iterations = 0; iterations <= 20; iterations++) {
@@ -622,6 +624,7 @@ namespace Photon.NINA.Skyflats {
                 // Initial slew before the loop
                 CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
                 await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+                telescopeMediator.SetTrackingEnabled(true);
             }
 
             for (var i = 1; i < GetIterations().Iterations; i++) {
@@ -629,6 +632,7 @@ namespace Photon.NINA.Skyflats {
                 if (Settings.Default.ReslewToNullPoint && reslewTimer != null && reslewTimer.Elapsed.TotalSeconds >= Settings.Default.ReslewEverySeconds) {
                     CalculateNullPoint nullPoint = new CalculateNullPoint(profileService);
                     await telescopeMediator.SlewToTopocentricCoordinates(nullPoint.Calculate().Coordinates, token);
+                    telescopeMediator.SetTrackingEnabled(true);
                     reslewTimer.Restart();
                 }
                 GetIterations().CompletedIterations++;
